@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ image.title }}</h1>
+
+<div class="detail-image">
+  <img src="{{ url }}" alt="{{ image.title }}" style="max-width:100%; max-height:500px;">
+</div>
+
+<div class="metadata">
+  <h2>Metadata Bilgileri</h2>
+  <table>
+    <tr><th>Başlık</th><td>{{ image.title }}</td></tr>
+    <tr><th>Açıklama</th><td>{{ image.description or '-' }}</td></tr>
+    <tr><th>Dosya Adı</th><td>{{ image.filename }}</td></tr>
+    <tr><th>Dosya Türü</th><td>{{ image.filetype }}</td></tr>
+    <tr><th>Dosya Boyutu</th><td>{{ (image.filesize / 1024) | round(1) }} KB</td></tr>
+    <tr><th>MinIO Object Key</th><td>{{ image.object_key }}</td></tr>
+    <tr><th>Yüklenme Tarihi</th><td>{{ image.uploaded_at.strftime('%d.%m.%Y %H:%M:%S') }}</td></tr>
+  </table>
+</div>
+
+<div class="download-link">
+  <a href="{{ url_for('download', image_id=image.id) }}" class="btn-download">⬇️ Resmi İndir</a>
+</div>
+
+<br>
+<a href="{{ url_for('index') }}">← Geri Dön</a>
+{% endblock %}

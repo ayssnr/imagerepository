@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Yüklenen Resimler</h1>
+{% if images %}
+  <div class="grid">
+    {% for img in images %}
+    <div class="card">
+      <a href="{{ url_for('detail', image_id=img.id) }}">
+        <div class="card-title">{{ img.title }}</div>
+        <div class="card-meta">{{ img.filename }}</div>
+        <div class="card-meta">{{ img.uploaded_at.strftime('%d.%m.%Y %H:%M') }}</div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>Henüz resim yüklenmemiş. <a href="{{ url_for('upload') }}">İlk resmi yükle</a></p>
+{% endif %}
+{% endblock %}
