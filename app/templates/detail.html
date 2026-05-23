@@ -3,7 +3,7 @@
 <h1>{{ image.title }}</h1>
 
 <div class="detail-image">
-  <img src="{{ url }}" alt="{{ image.title }}" style="max-width:100%; max-height:500px;">
+ <img src="{{ url }}" alt="{{ image.title }}" style="max-width:100%; max-height:500px;">
 </div>
 
 <div class="metadata">
@@ -22,6 +22,7 @@
 <div class="download-link">
   <a href="{{ url_for('download', image_id=image.id) }}" class="btn-download">⬇️ Resmi İndir</a>
 </div>
+
 
 <br>
 <a href="{{ url_for('index') }}">← Geri Dön</a>

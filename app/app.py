@@ -1,25 +1,22 @@
 import os
 import time
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, abort
+import requests as req_lib
+from flask import Flask, render_template, request, redirect, url_for, abort, Response
 from minio import Minio
-from minio.error import S3Error
 from werkzeug.utils import secure_filename
-from datetime import datetime
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# --- Config from environment ---
-DATABASE_URL  = os.environ.get("DATABASE_URL")
-MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "minio:9000")
+DATABASE_URL     = os.environ.get("DATABASE_URL")
+MINIO_ENDPOINT   = os.environ.get("MINIO_ENDPOINT", "minio:9000")
 MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY", "minioadmin")
 MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY", "minioadmin123")
-MINIO_BUCKET = os.environ.get("MINIO_BUCKET", "images")
+MINIO_BUCKET     = os.environ.get("MINIO_BUCKET", "images")
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
-# --- MinIO client ---
 minio_client = Minio(
     MINIO_ENDPOINT,
     access_key=MINIO_ACCESS_KEY,
@@ -31,7 +28,6 @@ def ensure_bucket():
     if not minio_client.bucket_exists(MINIO_BUCKET):
         minio_client.make_bucket(MINIO_BUCKET)
 
-# --- PostgreSQL helpers ---
 def get_conn():
     return psycopg2.connect(DATABASE_URL)
 
@@ -57,7 +53,6 @@ def init_db():
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# --- Routes ---
 @app.route("/")
 def index():
     conn = get_conn()
@@ -83,7 +78,7 @@ def upload():
             return render_template("upload.html", error="Başlık ve resim dosyası zorunludur.")
 
         if not allowed_file(file.filename):
-            return render_template("upload.html", error="Sadece resim dosyaları yüklenebilir (png, jpg, jpeg, gif, webp).")
+            return render_template("upload.html", error="Sadece resim dosyaları yüklenebilir.")
 
         filename   = secure_filename(file.filename)
         filetype   = filename.rsplit(".", 1)[1].lower()
@@ -135,25 +130,42 @@ def detail(image_id):
         "object_key": row[6], "uploaded_at": row[7],
     }
 
-    # Presigned URL (1 saat geçerli)
-    url = minio_client.presigned_get_object(MINIO_BUCKET, image["object_key"])
+    url = url_for("serve_image", image_id=image_id)
     return render_template("detail.html", image=image, url=url)
 
-@app.route("/download/<int:image_id>")
-def download(image_id):
+@app.route("/serve/<int:image_id>")
+def serve_image(image_id):
     conn = get_conn()
     cur  = conn.cursor()
-    cur.execute("SELECT object_key FROM images WHERE id = %s", (image_id,))
+    cur.execute("SELECT object_key, filetype FROM images WHERE id = %s", (image_id,))
     row = cur.fetchone()
     cur.close()
     conn.close()
     if not row:
         abort(404)
     url = minio_client.presigned_get_object(MINIO_BUCKET, row[0])
-    return redirect(url)
+    r = req_lib.get(url, stream=True)
+    return Response(r.content, content_type=f"image/{row[1]}")
+
+@app.route("/download/<int:image_id>")
+def download(image_id):
+    conn = get_conn()
+    cur  = conn.cursor()
+    cur.execute("SELECT object_key, filename FROM images WHERE id = %s", (image_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    if not row:
+        abort(404)
+    url = minio_client.presigned_get_object(MINIO_BUCKET, row[0])
+    r = req_lib.get(url)
+    return Response(
+        r.content,
+        headers={"Content-Disposition": f"attachment; filename={row[1]}"},
+        content_type=r.headers.get("content-type", "application/octet-stream")
+    )
 
 if __name__ == "__main__":
-    # DB ve MinIO hazır olana kadar bekle
     for _ in range(10):
         try:
             init_db()
