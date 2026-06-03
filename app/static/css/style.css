@@ -1,47 +1,67 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
+body { font-family: Arial, sans-serif; background: #f2ede4; color: #3b2f1e; }
 
 nav {
-  background: #2c3e50; color: white;
+  background: #4a6741; color: #f5f0e8;
   padding: 12px 24px; display: flex; gap: 20px; align-items: center;
 }
-nav a { color: white; text-decoration: none; font-weight: bold; }
-nav span { margin-left: auto; font-size: 1.1em; }
+nav a { color: #d4e8c2; text-decoration: none; font-weight: bold; }
+nav a:hover { color: #ffffff; }
+nav span { margin-left: auto; font-size: 1.1em; color: #c8ddb4; }
 
 main { max-width: 960px; margin: 30px auto; padding: 0 20px; }
-h1 { margin-bottom: 20px; color: #2c3e50; }
+h1 { margin-bottom: 20px; color: #3d5c35; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px; }
 .card {
-  background: white; border-radius: 8px; padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  background: #fffdf7; border-radius: 10px; padding: 16px;
+  box-shadow: 0 2px 8px rgba(74,103,65,.12);
+  border: 1px solid #d6c9a8;
+  transition: box-shadow 0.2s;
 }
+.card:hover { box-shadow: 0 4px 14px rgba(74,103,65,.2); }
 .card a { text-decoration: none; color: inherit; }
-.card-title { font-weight: bold; margin-bottom: 6px; }
-.card-meta { font-size: .85em; color: #666; }
+.card-title { font-weight: bold; margin-bottom: 6px; color: #3d5c35; }
+.card-meta { font-size: .85em; color: #7a6a50; }
 
-.upload-form { background: white; padding: 24px; border-radius: 8px; max-width: 500px; }
-.upload-form label { display: block; margin-top: 14px; font-weight: bold; }
+.upload-form { background: #fffdf7; padding: 24px; border-radius: 10px; max-width: 500px; border: 1px solid #d6c9a8; }
+.upload-form label { display: block; margin-top: 14px; font-weight: bold; color: #4a6741; }
 .upload-form input, .upload-form textarea {
   width: 100%; padding: 8px; margin-top: 4px;
-  border: 1px solid #ccc; border-radius: 4px;
+  border: 1px solid #b8a98a; border-radius: 6px;
+  background: #faf6ee; color: #3b2f1e;
+}
+.upload-form input:focus, .upload-form textarea:focus {
+  outline: none; border-color: #6a9a5e; box-shadow: 0 0 0 2px rgba(106,154,94,.15);
 }
 .upload-form textarea { height: 80px; resize: vertical; }
 .upload-form button {
   margin-top: 18px; padding: 10px 24px;
-  background: #2c3e50; color: white; border: none;
-  border-radius: 4px; cursor: pointer; font-size: 1em;
+  background: #4a6741; color: #f5f0e8; border: none;
+  border-radius: 6px; cursor: pointer; font-size: 1em;
+  transition: background 0.2s;
 }
+.upload-form button:hover { background: #3d5c35; }
 
-.error { background: #fde; color: #c00; padding: 10px; border-radius: 4px; margin-bottom: 12px; }
+.error { background: #fdebd0; color: #8b4513; padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #d4a57a; }
 
-.metadata { background: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
+.metadata { background: #fffdf7; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px solid #d6c9a8; }
+.metadata h2 { color: #3d5c35; margin-bottom: 14px; font-size: 1.1em; }
 .metadata table { width: 100%; border-collapse: collapse; }
-.metadata th, .metadata td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
-.metadata th { width: 180px; color: #555; font-weight: bold; }
+.metadata th, .metadata td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #e8dfc8; }
+.metadata th { width: 180px; color: #6a5840; font-weight: bold; }
+.metadata td { color: #3b2f1e; }
+
+.detail-image { margin-top: 16px; background: #fffdf7; padding: 16px; border-radius: 10px; border: 1px solid #d6c9a8; display: inline-block; }
 
 .download-link { margin-top: 20px; }
 .btn-download {
   display: inline-block; padding: 10px 20px;
-  background: #27ae60; color: white; border-radius: 4px; text-decoration: none;
+  background: #7a9e3b; color: #f5f0e8; border-radius: 6px;
+  text-decoration: none; font-weight: bold;
+  transition: background 0.2s;
 }
+.btn-download:hover { background: #5c7a2a; }
+
+a { color: #4a6741; }
+a:hover { color: #3d5c35; }
